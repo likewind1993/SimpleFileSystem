@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 
+#include "File.hpp"
 #include "Ls.hpp"
 #include "Vim.hpp"
 #include "Mkdir.hpp"
@@ -17,12 +18,11 @@ class Bash
 {
 private:
     std::string cmd_;
-    std::string cur_dir_;
     std::string format_output_;
 
     FileSystem * p_fs_;
     Disk * p_disk_;
-
+    File * p_file_;
     Commands commands;
 
     bool mount();
@@ -30,6 +30,7 @@ private:
 
 public:
     Bash(/* args */);
+    Bash(Disk * disk, FileSystem * file_system);
     ~Bash();
 
     void setDiskAndFileSystem(Disk * p_disk, FileSystem * p_fs);
@@ -42,13 +43,17 @@ bool Bash::mount(){
         std::cout<<"Can't mount FileSystem!"<<std::endl;
         return false;
     }
+    p_file_ = new File();
+
     return true;
 }
 
 void Bash::setDiskAndFileSystem(Disk * p_disk, FileSystem * p_fs){
     p_fs_ = p_fs;
     p_disk_ = p_disk;
-    mount();
+    if(!mount()) {
+        exit(-1);
+    }
 };
 
 void Bash::parseCmd(std::string cmd, vector<std::string> & args){
@@ -71,6 +76,8 @@ bool Bash::execveCmd(std::string & cmd){
     parseCmd(cmd, args);
     if(args[0] == "mkdir"){
         
+    }else if(args[0] == "ls"){
+
     }
 
 
@@ -91,12 +98,9 @@ void Bash::show(){
 
 Bash::Bash(/* args */)
 {
-    cur_dir_ = "/";
-    format_output_ = "likewinddeMacBook";
-    
-    commands.p_ls = new Ls();
-    commands.p_mkdir  = new Mkdir();
-    commands.p_vim = new Vim();
+    format_output_ = "likewindMacBook";
+    p_cur_file_ = new File();
+
 }
 
 Bash::~Bash()

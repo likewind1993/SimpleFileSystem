@@ -1,6 +1,8 @@
 #include <iostream>
+#include <vector>
 
 using u32 = unsigned int;
+using u64 = unsigned long long int;
 using ptr_u32 = unsigned int * ;
 using ptr_void = void * ;
 
@@ -18,7 +20,6 @@ struct SuperBlock{
 
     u32 inodes_per_group;
     u32 blocks_per_group;
-
 };
 struct InodeTable{
     u32 mode;
@@ -41,5 +42,11 @@ struct BlockGroupDesc{
     u32 free_inodes_count;
     
     u32 use_dirs_count;
+};
+
+struct Dentry{
+    u32 inode;
+    u32 file_type;
+    std::string name;
 };
 

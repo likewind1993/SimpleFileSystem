@@ -12,9 +12,8 @@ int main() {
     
     Bash bash;
     bash.setDiskAndFileSystem( &disk, &fs);
-
+    
     bash.show();
-
 
     return 0;
 }

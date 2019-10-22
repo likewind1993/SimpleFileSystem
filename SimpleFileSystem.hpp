@@ -1,18 +1,23 @@
 #include "FileSystem.hpp"
 #include "Info.h"
 
-class SimpleFileSystem : public FileSystem
+class SimpleFileSystem : private FileSystem
 {
 private:
     SuperBlock sb_;  
     BlockGroupDesc bgd_;
 
+    std::vector<BlockGroupDesc> bgds_;
+
     u32 sb_size_;
     u32 block_group_size_;
-
+    u32 block_group_count_;
     u32 cur_dir;
 
     void init();
+    u32  alloc_inode();
+    bool delete_inode();
+
     bool writeSuperBlockToDisk(u32 block_no, ptr_void p_disk);
     bool writeBlockGroupDescToDisk(u32 block_no, ptr_void p_disk);
     bool writeBitmapToDisk(u32 block_no, ptr_void p_disk);
@@ -35,10 +40,41 @@ public:
     bool open(const std::string filename) override { return true; };
     bool del(const std::string filename) override {return true; };
     bool close(const std::string filename) override { return true; };
-    bool mkdir(const std::string filename) override { return true;};
+    bool mkdir(const std::string filename) override;
     bool rmdir(const std::string filename) override { return true; };
 
 };
+u32 SimpleFileSystem::alloc_inode(){
+    u32 cur_inode = sb_.inode_count + 1;
+
+    for(size_t i = 0; i<block_group_count_; ++i){
+        if(bgds_[i].free_inodes_count > 0 ){
+            u32 alloc_block = 0;
+            for(int j = 0; j<block_group_count_; ++j){
+                if(bgds_[j].free_blocks_count > 0){
+                    
+
+                }
+            }
+
+
+
+
+            break;
+        }
+    }
+
+    return cur_inode;
+}
+bool SimpleFileSystem::delete_inode(){
+
+}
+
+bool SimpleFileSystem::mkdir(const std::string filename)  {
+    
+    
+    return true;
+}
 
 void SimpleFileSystem::init(){
     sb_.block_size = 1024;
@@ -94,6 +130,8 @@ bool SimpleFileSystem::initDisk(Disk * disk){
     u32 disk_size = disk->get_size_byte();
     u32 block_group_count = (disk_size - sb_size_) / block_group_size_;
     
+    block_group_count_ = block_group_count;
+
     sb_.blocks_count = block_group_count * sb_.blocks_per_group;
     sb_.inode_count = block_group_count * sb_.inodes_per_group;
 
